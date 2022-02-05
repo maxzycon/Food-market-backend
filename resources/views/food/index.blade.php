@@ -19,6 +19,12 @@
                     Download excel
                 </a>
 
+                <a href="{{ route('food.pdf') }}"
+                    target="_blank"
+                    class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded ml-2">
+                    Download pdf
+                </a>
+
                 <form class="mt-5">
                     <input type="text" name="name" value="{{request()->get('name')}}" class="form-control" placeholder="ketik filter nama disini"/>
                     <input type="text" name="type" value="{{request()->get('type')}}" class="form-control" placeholder="ketik filter type disini"/>

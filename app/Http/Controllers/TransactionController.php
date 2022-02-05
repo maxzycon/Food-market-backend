@@ -5,22 +5,41 @@ use App\Models\Transaction;
 use App\Exports\TransactionsExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class TransactionController extends Controller
 {
      /**
-     * Download excel file.
+     * Download pdf & excel file.
      *
      * @return Maatwebsite\Excel\Facades\Excel
      */
 
-    public function excel(Request $request)
+    public function export(Request $request)
     {
-        $status = $request->post("status");
-        if ($status) {
-            return (new TransactionsExport)->forStatus($status)->download($status."-".date("d-m-Y").".xlsx");
+        $status = $request->post("status",false);
+        $type = $request->post("type");
+        if ($type === "excel") {
+            if ($status) {
+                return (new TransactionsExport)->forStatus($status)->download($status."-".date("d-m-Y").".xlsx");
+            }
+            return (new TransactionsExport)->download("allStatus-".date("d-m-Y").".xlsx");
+        }else{
+            $nama = "user-pdf-".date("d-m-Y").".pdf";
+            $query = Transaction::query();
+            $query->join('food', 'transactions.food_id', '=', 'food.id')
+                  ->join('users', 'transactions.user_id', '=', 'users.id')
+                  ->select(['transactions.id','food.name','users.email','quantity','food_price','total_modal','total_laba','total','status']);
+
+            $query->when($status, function ($q, $status) { 
+                $nama = $status."-pdf-".date("d-m-Y").".pdf";
+                return $q->where('status',$status);
+            });
+
+            $transaction = $query->get();
+            $pdf = PDF::loadView('exports.pdf.transaction', compact("transaction","status"))->setPaper("a4","landscape");
+            return $pdf->stream($nama);
         }
-        return (new TransactionsExport)->download("allStatus-".date("d-m-Y").".xlsx");
     }
 
     /**
@@ -32,7 +51,8 @@ class TransactionController extends Controller
     {
         $query = Transaction::query()
                             ->join("food","transactions.food_id","=","food.id")
-                            ->join("users","transactions.user_id","=","users.id");
+                            ->join("users","transactions.user_id","=","users.id")
+                            ->select(['transactions.id','food.name','users.email','quantity','food_price','total_modal','total_laba','total','status']);
         $query->when($request->get("name",false), function ($q, $name) { 
             return $q->where('food.name', 'like',"%{$name}%");
         });

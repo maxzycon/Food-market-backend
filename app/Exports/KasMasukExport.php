@@ -10,6 +10,12 @@ use Maatwebsite\Excel\Concerns\Exportable;
 class KasMasukExport implements FromView
 {
     use Exportable;
+    public function __construct($start=false,$end=false) {
+        $this->start = $start;
+        $this->end = $end;
+    }
+
+
     public function view():View
     {
         $query = Transaction::query();
@@ -17,7 +23,19 @@ class KasMasukExport implements FromView
               ->join('users', 'transactions.user_id', '=', 'users.id')
               ->orderBy("transactions.total_laba","desc")
               ->select(['transactions.id','food.name','users.email','quantity','food_price','total_modal','total_laba','total','status']);
+
+        $query->when($this->start, function($q)
+        {
+            return $q->whereDate("transactions.created_at",">=",$this->start);
+        });
+
+        $query->when($this->end, function($q)
+        {
+            return $q->whereDate("transactions.created_at","<=",$this->end);
+        });
+
         $kasmasuk = $query->get();
-        return view("exports.kasmasuk",compact("kasmasuk"));
+        $total = $kasmasuk->whereIn("status",['ON_DELIVERY','DELIVERED'])->sum("total");
+        return view("exports.excel.kasmasuk",compact("kasmasuk","total"));
     }
 }

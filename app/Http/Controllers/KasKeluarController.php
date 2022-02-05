@@ -6,16 +6,53 @@ use App\Exports\KasKeluarExport;
 use App\Http\Requests\KasKeluarRequest;
 use App\Models\KasKeluar;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class KasKeluarController extends Controller
 {
-    public function excel(Request $request)
+    public function export(Request $request)
     {
-        $type = $request->get("type1");
-        if ($type) {
-            return (new KasKeluarExport)->forType($type)->download('KasKeluar-'.$type."-".date("d-m-Y").".xlsx");
+        $type = $request->post("type1");
+        $typeE = $request->post("type2");
+        
+        $start = $request->post("start",false);
+        $end = $request->post("end",false);
+
+        if ($typeE === "excel") {
+            if ($type) {
+                return (new KasKeluarExport)->forType($type)->download('KasKeluar-'.$type."-".date("d-m-Y").".xlsx");
+            }
+            if ($typeE && $start || $end ) {
+                return (new KasKeluarExport)->forType($type)->RangeData($start,$end)->download('KasKeluar-'.$type."-".date("d-m-Y").".xlsx");
+            }
+            return (new KasKeluarExport)->download("KasKeluar-allType-".date("d-m-Y").".xlsx");
+        }else{
+            $nama = 'KasKeluar-'."all-".date("d-m-Y").".pdf";
+            $query = KasKeluar::query()->select(['id','name','jenis_pengeluaran','supplier','tanggal','quantity','harga','total']);
+            
+            $query->when($type,function($q,$type)
+            {
+                $nama = 'KasKeluar-'.$type."-".date("d-m-Y").".pdf";
+                return $q->where("jenis_pengeluaran",$type);
+            });
+
+            $query->when($start, function ($q) { 
+                return $q->whereDate('created_at','>=', request()->post("start"));
+            });
+
+            $query->when($end, function ($q) { 
+                return $q->whereDate('created_at','<=',  request()->post("end"));
+            });
+
+            $query->when($type,function($q,$type)
+            {
+                $nama = 'KasKeluar-'.$type."-".date("d-m-Y").".pdf";
+                return $q->where("jenis_pengeluaran",$type);
+            });
+            $kaskeluar = $query->get();
+            $pdf = PDF::loadView('exports.pdf.kaskeluar', compact("kaskeluar","type"))->setPaper("a4","landscape");
+            return $pdf->stream($nama);
         }
-        return (new KasKeluarExport)->download("KasKeluar-allType-".date("d-m-Y").".xlsx");
     }
 
     /**

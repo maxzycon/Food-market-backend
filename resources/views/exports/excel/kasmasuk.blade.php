@@ -8,8 +8,8 @@
             <th style='border: 1px solid #000000;'>Harga</th>
             <th style='border: 1px solid #000000;'>Total Modal</th>
             <th style='border: 1px solid #000000;'>Total Laba</th>
-            <th style='border: 1px solid #000000;'>Total</th>
             <th style='border: 1px solid #000000;'>Status</th>
+            <th style='border: 1px solid #000000;'>Total</th>
         </tr>
     </thead>
     <tbody>
@@ -22,9 +22,14 @@
                 <td style='border: 1px solid #000000;'>Rp. {{ number_format($item->food_price) }}</td>
                 <td style='border: 1px solid #000000;'>Rp. {{ number_format($item->total_modal) }}</td>
                 <td style='border: 1px solid #000000;'>Rp. {{ number_format($item->total_laba) }}</td>
-                <td style='border: 1px solid #000000;'>Rp. {{ number_format($item->total) }}</td>
                 <td style='border: 1px solid #000000;'>{{ $item->status }}</td>
+                <td style='border: 1px solid #000000;'>Rp. {{ number_format($item->total) }}</td>
             </tr>
         @endforeach
+        <tr>
+            <td colspan="7" style='border: 1px solid #000000;text-align:center;'>Total uang masuk</td>
+            <td style='border: 1px solid #000000;text-align:center'>:</td>
+            <td style='border: 1px solid #000000;'>Rp. {{ number_format($total) }}</td>
+        </tr>
     </tbody>
 </table>

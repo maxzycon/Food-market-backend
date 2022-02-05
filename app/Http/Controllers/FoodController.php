@@ -8,9 +8,24 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Exports\FoodsExport;
 use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
+
 
 class FoodController extends Controller
 {
+     /**
+     * Download pdf file.
+     *
+     * @return Barryvdh\DomPDF\Facade\Pdf
+     */
+
+    public function pdf()
+    {
+        $food = Food::select('id','name','price','modal','laba','rate','types')->withSum("transaction",'quantity')->get();
+        $pdf = PDF::loadView('exports.pdf.food', compact("food"))->setPaper("a4","landscape");
+        return $pdf->stream("food-pdf-".date("d-m-Y").".pdf");
+    }
+    
     /**
      * Download excel file.
      *
@@ -19,7 +34,7 @@ class FoodController extends Controller
 
     public function excel(Request $request)
     {
-        return Excel::download(new FoodsExport,"food-".date("d-m-Y").".xlsx");
+        return Excel::download(new FoodsExport,"food-excel-".date("d-m-Y").".xlsx");
     }
 
     /**

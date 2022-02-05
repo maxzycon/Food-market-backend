@@ -13,14 +13,19 @@
                     + Create User
                 </a>
 
-                <form class="mt-5" method="POST" action="{{ route('users.excel') }}">
+                <form class="mt-5" method="POST" action="{{ route('users.export') }}" target="_blank">
                     <select name="roles1" id="roles1">
                         <option value="">- download semua role -</option>
                         <option value="admin">admin</option>
                         <option value="user">user</option>
                     </select>
+                    <select name="type" id="type" required>
+                        <option value="">- pilih type export -</option>
+                        <option value="excel">excel</option>
+                        <option value="pdf">pdf</option>
+                    </select>
                     @csrf
-                    <button type="submit">Download excel</button>
+                    <button type="submit">Download</button>
                 </form>
 
                 <form class="mt-5">
@@ -68,7 +73,7 @@
                                     <td class="border px-2 py-2 ">{{ $item->name }}</td>
                                     <td class="border px-2 py-2">{{ $item->email }}</td>
                                     <td class="border px-2 py-2 text-center">{{ $item->roles }}</td>
-                                    <td class="border px-2 py-2">Rp. {{ number_format($item->total_transaksi) }}</td>
+                                    <td class="border px-2 py-2">Rp. {{ number_format($item->transaction_sum_total) }}</td>
                                     <td class="border px-2 py-2 text-center">
                                         <a href="{{ route('users.edit', $item->id) }}"
                                             class="inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mx-2 rounded">

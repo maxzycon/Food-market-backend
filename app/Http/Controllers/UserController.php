@@ -10,24 +10,35 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use App\Exports\UsersExport;
 use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class UserController extends Controller
 {
     /**
-     * Download excel file.
-     *
-     * @return Maatwebsite\Excel\Facades\Excel
+     * Download pdf & excel file.
      */
 
-    public function excel(Request $request)
+    public function export(Request $request)
     {
-        $roles = $request->post("roles1");
-        if (!empty($roles)) {
-            return Excel::download(new UsersExport($roles),strtolower($roles)."-".date("d-m-Y").".xlsx");
-            // return (new UsersExport)->forRole($roles)->download(strtolower($roles)."-".date("d-m-Y").".xlsx");
+        $roles = $request->post("roles1",false);
+        $type = $request->post("type");
+        if ($type === "excel") {
+            if (!empty($roles)) {
+                return Excel::download(new UsersExport($roles),strtolower($roles)."-".date("d-m-Y").".xlsx");
+            }
+            return Excel::download((new UsersExport),"all-".date("d-m-Y").".xlsx");
+        }else{
+            $nama = "user-pdf-".date("d-m-Y").".pdf";
+            $query = User::query()->withSum("transaction","total");
+            $query->when($roles,function($q,$roles)
+            {
+                $nama = "all-pdf-".date("d-m-Y").".pdf";
+                return $q->where("roles",strtoupper($roles));
+            });
+            $user = $query->orderBy("transaction_sum_total","desc")->get();
+            $pdf = PDF::loadView('exports.pdf.user', compact("user","roles"))->setPaper("a4","landscape");
+            return $pdf->stream($nama);
         }
-        return Excel::download((new UsersExport),"all-".date("d-m-Y").".xlsx");
-        // return (new UsersExport)->download("all-".date("d-m-Y").".xlsx");
     }
 
     /**
@@ -46,7 +57,7 @@ class UserController extends Controller
         $query->when($request->get("name",false), function ($q, $name) { 
             return $q->where('name','like', "%{$name}%");
         });
-        $user = $query->paginate(10);
+        $user = $query->withSum("transaction","total")->paginate(10);
         return view('users.index', compact("user"));
     }
 

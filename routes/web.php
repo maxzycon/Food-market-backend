@@ -35,12 +35,18 @@ Route::prefix('dashboard')
     ->middleware(['auth:sanctum', 'admin'])
     ->group(function () {
         // excel download route
-        Route::post("/users/download",[UserController::class,'excel'])->name("users.excel");
-        Route::get("/food/download",[FoodController::class,'excel'])->name("food.excel");
-        Route::post("/transaction/download",[TransactionController::class,'excel'])->name("transaction.excel");
-        Route::get("/kasmasuk/download",[KasMasukController::class,'excel'])->name("kasmasuk.excel");
-        Route::post("/kaskeluar/download",[KasKeluarController::class,'excel'])->name("kaskeluar.excel");
-        Route::post("/keuntungan/download",[KeuntunganController::class,'excel'])->name("keuntungan.excel");
+        Route::get("/food/download_excel",[FoodController::class,'excel'])->name("food.excel");
+        Route::get("/food/download_pdf",[FoodController::class,'pdf'])->name("food.pdf");
+        
+        Route::post("/users/export",[UserController::class,'export'])->name("users.export");
+
+        Route::post("/transaction/export",[TransactionController::class,'export'])->name("transaction.export");
+
+        Route::post("/kasmasuk/export",[KasMasukController::class,'export'])->name("kasmasuk.export");
+
+        Route::post("/kaskeluar/export",[KasKeluarController::class,'export'])->name("kaskeluar.export");
+
+        Route::post("/keuntungan/export",[KeuntunganController::class,'export'])->name("keuntungan.export");
         // end excel donwload route
 
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');

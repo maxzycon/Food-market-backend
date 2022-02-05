@@ -15,6 +15,6 @@ class FoodsExport implements FromView
     public function view() :View
     {
         $food = Food::select('id','name','price','modal','laba','rate','types')->withSum("transaction",'quantity')->get();
-        return view("exports.food",compact("food"));
+        return view("exports.excel.food",compact("food"));
     }   
 }

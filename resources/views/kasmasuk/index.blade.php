@@ -13,21 +13,20 @@
                     <div class="w-full md:w-5/6 px-4 mb-4 md:mb-0">
                         <div class="flex flex-wrap mb-3">
                             <div class="w-1/6">
-
                                 <div class="text-sm">Produk Terjual</div>
-                                <div class="text-xl font-bold">{{ ($kasmasuk->sum("quantity")) }} produk</div>
+                                <div class="text-xl font-bold">{{ ($kasmasuk->whereIn("status",['ON_DELIVERY','DELIVERED'])->sum("quantity")) }} produk</div>
                             </div>
                             <div class="w-3/6">
                                 <div class="text-sm">Total Uang Masuk</div>
-                                <div class="text-xl font-bold">Rp. {{ number_format($kasmasuk->sum("total")) }}</div>
+                                <div class="text-xl font-bold">Rp. {{ number_format($kasmasuk->whereIn("status",['ON_DELIVERY','DELIVERED'])->sum("total")) }}</div>
                             </div>
                             <div class="w-1/6">
                                 <div class="text-sm">Total Modal</div>
-                                <div class="text-xl font-bold">Rp. {{ number_format($kasmasuk->sum("total_modal")) }}</div>
+                                <div class="text-xl font-bold">Rp. {{ number_format($kasmasuk->whereIn("status",['ON_DELIVERY','DELIVERED'])->sum("total_modal")) }}</div>
                             </div>
                             <div class="w-1/6">
                                 <div class="text-sm">Total Laba</div>
-                                <div class="text-xl font-bold">Rp. {{ number_format($kasmasuk->sum("total_laba")) }}</div>
+                                <div class="text-xl font-bold">Rp. {{ number_format($kasmasuk->whereIn("status",['ON_DELIVERY','DELIVERED'])->sum("total_laba")) }}</div>
                             </div>
 
                         </div>
@@ -42,8 +41,17 @@
         <div class="bg-white max-w-7xl mx-auto px-4 py-10">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="mb-5">
-                    <a href="{{ route('kasmasuk.excel') }}"
-                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Download excel</a>
+                <form method="POST" action="{{ route('kasmasuk.export') }}" target="_blank">
+                    <input type="date" value="{{request()->get('start')}}" name="start" id="start">
+                    <input type="date" value="{{request()->get('end')}}" name="end" id="end">
+                    <select name="type" id="type" required>
+                        <option value="">- pilih type export -</option>
+                        <option value="excel">excel</option>
+                        <option value="pdf">pdf</option>
+                    </select>
+                    @csrf
+                    <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Download</button>
+                </form>
                 </div>
                 <div class="bg-white">
                     <form class="mb-5">
@@ -54,7 +62,9 @@
                             <option {{ request()->get("type") == "DELIVERED" ? "Selected" : "" }} value="DELIVERED">DELIVERED</option>
                             <option {{ request()->get("type") == "CANCELLED" ? "Selected" : "" }} value="CANCELLED">CANCELLED</option>
                         </select>
-                        <button type="submit">Filter</button>
+                        <input type="date" value="{{request()->get('start')}}" name="start" id="start">
+                        <input type="date" value="{{request()->get('end')}}" name="end" id="end">
+                        <button class="ml-2" type="submit">Filter</button>
                     </form>
                     <table class="table-auto w-full text-center" style="font-size: 12px">
                         <thead>

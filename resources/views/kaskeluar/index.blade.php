@@ -40,7 +40,7 @@
                         + Add Data
                     </a>
 
-                    <form class="mt-5" action="{{route('kaskeluar.excel')}}" method="POST">
+                    <form class="mt-5" action="{{route('kaskeluar.export')}}" method="POST" target="_blank">
                         @csrf
                         <select name="type1" id="type1">
                             <option value="">- semua jenis pengeluaran -</option>
@@ -50,7 +50,14 @@
                             <option {{ request()->post("type1") == "Retribusi" ? "Selected" : "" }} value="Retribusi">Retribusi</option>
                             <option {{ request()->post("type1") == "Pemeliharaan" ? "Selected" : "" }} value="Pemeliharaan">Pemeliharaan</option>
                         </select>
-                        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-2">Download excel</button>
+                        <input type="date" name="start" id="start">
+                        <input type="date" name="end" id="end">
+                        <select name="type2" id="type" required>
+                            <option value="">- pilih type export -</option>
+                            <option value="excel">excel</option>
+                            <option value="pdf">pdf</option>
+                        </select>
+                        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-2">Download</button>
                     </form>
 
                     <form class="mt-5">
@@ -63,7 +70,7 @@
                             <option {{ request()->get("type") == "Retribusi" ? "Selected" : "" }} value="Retribusi">Retribusi</option>
                             <option {{ request()->get("type") == "Pemeliharaan" ? "Selected" : "" }} value="Pemeliharaan">Pemeliharaan</option>
                         </select>
-                        <button type="submit">Filter</button>
+                        <button class="ml-2" type="submit">Filter</button>
                     </form>
                 </div>
                 <div class="bg-white">

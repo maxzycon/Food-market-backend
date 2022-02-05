@@ -20,7 +20,7 @@
                 <td style='border: 1px solid #000000;'>{{ $item->name }}</td>
                 <td style='border: 1px solid #000000;'>{{ $item->email }}</td>
                 <td style='border: 1px solid #000000;'>{{ $item->roles }}</td>
-                <td style='border: 1px solid #000000;'>Rp. {{ number_format($item->total_transaksi) }}</td>
+                <td style='border: 1px solid #000000;'>Rp. {{ number_format($item->transaction_sum_total) }}</td>
             </tr>
         @endforeach
     </tbody>

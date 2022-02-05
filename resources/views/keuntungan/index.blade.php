@@ -20,7 +20,7 @@
              </select>
              <button type="submit">Filter</button>
          </form>
-         <form class="max-w-7xl mx-auto py-5" method="POST" action="{{route('keuntungan.excel')}}">
+         <form class="max-w-7xl mx-auto py-5" method="POST" action="{{route('keuntungan.export')}}" target="_blank">
              @csrf
              <select name="tahun1" id="tahun1">
                  <option value="">- semua tahun -</option>                 
@@ -34,7 +34,14 @@
                     <option value="{{$i}}" {{request()->post("bulan1") == $i ? "selected" : ""}}>{{$bulan[$i-1]}}</option>
                  @endfor
              </select>
-             <button type="submit">Download excel</button>
+             <input type="date" value="{{request()->get('start')}}" name="start" id="start">
+             <input type="date" value="{{request()->get('end')}}" name="end" id="end">
+            <select name="type" id="type" required>
+                <option value="">- pilih type export -</option>
+                <option value="excel">excel</option>
+                <option value="pdf">pdf</option>
+            </select>
+             <button type="submit">Download</button>
          </form>
         <div class="bg-white max-w-7xl mx-auto px-4 py-10">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">

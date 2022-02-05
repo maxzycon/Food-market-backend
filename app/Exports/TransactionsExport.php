@@ -25,12 +25,12 @@ class TransactionsExport implements FromView
               ->select(['transactions.id','food.name','users.email','quantity','food_price','total_modal','total_laba','total','status']);
         if (empty($this->status)) {
             $transaction = $query->get();
-            return view("exports.transaction",compact("transaction"));
+            return view("exports.excel.transaction",compact("transaction"));
         }
         $query->when($this->status, function ($q, $status) { 
             return $q->where('status',$status);
         });
         $transaction = $query->get();
-        return view("exports.transaction",compact("transaction"));
+        return view("exports.excel.transaction",compact("transaction"));
     }
 }

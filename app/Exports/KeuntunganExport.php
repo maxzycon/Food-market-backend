@@ -13,42 +13,64 @@ class KeuntunganExport implements FromView
     // use Exportable;
     protected $bulan,$tahun;
 
-    public function __construct($bulan = null,$tahun = null)
+    public function __construct($bulan = false,$tahun = false,$start=false,$end=false)
     {
         $this->bulan = $bulan;
         $this->tahun = $tahun;
+        $this->start = $start;
+        $this->end = $end;
     }
 
     public function view():View
     {
         $query = Transaction::query();
-        $query->when(!empty($this->bulan) ?? $this->bulan, function ($q, $bulan) { 
-            return $q->whereMonth('created_at', $bulan);
+        
+        $query->when($this->start, function ($q) { 
+            return $q->whereDate('created_at',">=",$this->start);
         });
-        $query->when(!empty($this->tahun) ?? $this->tahun, function ($q, $tahun) { 
-            return $q->whereYear('created_at', $tahun);
+
+        $query->when($this->end, function ($q) { 
+            return $q->whereDate('created_at',"<=",$this->end);
         });
+
+        $query->when($this->bulan, function ($q) { 
+            return $q->whereMonth('created_at', $this->bulan);
+        });
+        $query->when($this->tahun, function ($q) { 
+            return $q->whereYear('created_at', $this->tahun);
+        });
+
         $keuntungan = $query->with(['food','user'])->paginate(10);
 
-        $total = $keuntungan->sum("total");
-        $total_modal = $keuntungan->sum('total_modal');
-        $total_laba = $keuntungan->sum('total_laba');
-        $quantity = $keuntungan->sum('quantity');
+        $total = $keuntungan->whereIn("status",['ON_DELIVERY','DELIVERED'])->sum("total");
+        $total_modal = $keuntungan->whereIn("status",['ON_DELIVERY','DELIVERED'])->sum('total_modal');
+        $total_laba = $keuntungan->whereIn("status",['ON_DELIVERY','DELIVERED'])->sum('total_laba');
+        $quantity = $keuntungan->whereIn("status",['ON_DELIVERY','DELIVERED'])->sum('quantity');
 
         // kas query
         $query_kas = KasKeluar::query();
-        $query_kas->when(!empty($this->bulan) ?? $this->bulan, function ($q, $bulan) { 
-            return $q->whereMonth('created_at', $bulan);
+        
+        $query_kas->when($this->start, function ($q) { 
+            return $q->whereDate('created_at',">=",$this->start);
         });
-        $query_kas->when(!empty($this->tahun) ?? $this->tahun, function ($q, $tahun) { 
-            return $q->whereYear('created_at', $tahun);
-        });
-        $kasKeluar = $query_kas->get();
 
+        $query_kas->when($this->end, function ($q) { 
+            return $q->whereDate('created_at',"<=",$this->end);
+        });
+
+        $query_kas->when(!empty($this->bulan) ?? $this->bulan, function ($q) { 
+            return $q->whereMonth('created_at', $this->bulan);
+        });
+        
+        $query_kas->when(!empty($this->tahun) ?? $this->tahun, function ($q) { 
+            return $q->whereYear('created_at', $this->tahun);
+        });
+
+        $kasKeluar = $query_kas->get();
         $jumlah_pembelian = $kasKeluar->sum('quantity');
         $total_pengeluaran = $kasKeluar->sum('total');
         $laba_bersih = $total_laba - $total_pengeluaran;
 
-        return view('exports.keuntungan',compact("keuntungan","total","total_modal","total_laba","quantity","jumlah_pembelian","total_pengeluaran","laba_bersih"));
+        return view('exports.excel.keuntungan',compact("keuntungan","total","total_modal","total_laba","quantity","jumlah_pembelian","total_pengeluaran","laba_bersih"));
     }
 }

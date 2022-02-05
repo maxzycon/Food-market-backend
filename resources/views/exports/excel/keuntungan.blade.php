@@ -47,12 +47,12 @@
             <th style='background-color:yellow;' colspan="3">Kas Keluar</th>
         </tr>
         <tr>
-            <td style='border: 1px solid #000000;'>Produk Terjual</td>
+            <td style='border: 1px solid #000000;'>Total pembelian</td>
             <td style='border: 1px solid #000000;'>:</td>
-            <td style='border: 1px solid #000000;'>- Rp. {{ $jumlah_pembelian }}</td>
+            <td style='border: 1px solid #000000;'>{{ $jumlah_pembelian }} item</td>
         </tr>
         <tr>
-            <td style='border: 1px solid #000000;'>Total Uang Masuk</td>
+            <td style='border: 1px solid #000000;'>Total Uang Keluar</td>
             <td style='border: 1px solid #000000;'>:</td>
             <td style='border: 1px solid #000000;'>Rp. {{ number_format($total_pengeluaran) }}</td>
         </tr>

@@ -19,11 +19,11 @@ class UsersExport implements FromView
 
     public function view() :View
     {
-        $query = User::query();
+        $query = User::query()->withSum("transaction","total");
         if (empty($this->roles)) {
-            $query->select(['id','name','email','roles','total_transaksi'])->orderBy('total_transaksi','desc');
+            $query->orderBy('transaction_sum_total','desc');
             $user = $query->get();
-            return view("exports.user",compact("user"));
+            return view("exports.excel.user",compact("user"));
         }
         
         $query->when($this->roles,function($q,$roles)
@@ -31,8 +31,8 @@ class UsersExport implements FromView
             return $q->where("roles",strtoupper($roles));
         });
 
-        $query->select(['id','name','email','roles','total_transaksi'])->orderBy('total_transaksi','desc');
+        $query->orderBy('transaction_sum_total','desc');
         $user = $query->get();
-        return view("exports.user",compact("user"));
+        return view("exports.excel.user",compact("user"));
     }
 }

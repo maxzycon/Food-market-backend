@@ -7,15 +7,63 @@ use App\Models\Transaction;
 use App\Exports\KeuntunganExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class KeuntunganController extends Controller
 {
-    public function excel(Request $request)
+    public function export(Request $request)
     {
-        $tahun = $request->post("tahun1");
-        $bulan = $request->post("bulan1");
-        $nama = empty($tahun) && empty($bulan) ? "allTime.xlsx" : $tahun.'-'. $bulan .'-'.'keuntungan.xlsx';
-        return Excel::download(new KeuntunganExport($bulan,$tahun), $nama);
+        $tahun = $request->post("tahun1",false);
+        $bulan = $request->post("bulan1",false);
+        $start = $request->post("start",false);
+        $end = $request->post("end",false);
+        $type = $request->post("type");
+
+        if ($type === "excel") {
+            $nama = empty($tahun) && empty($bulan) ? "allTime.xlsx" : $tahun.'-'. $bulan .'-'.'keuntungan.xlsx';
+            return Excel::download(new KeuntunganExport($bulan,$tahun,$start,$end), $nama);
+        }else{
+            $nama = empty($tahun) && empty($bulan) ? "allTime.pdf" : $tahun.'-'. $bulan .'-'.'keuntungan.pdf';
+            $query = Transaction::query();
+            $query->when($start, function ($q,$start) { 
+                return $q->whereDate('created_at',">=",$start);
+            });
+            $query->when($end, function ($q,$end) { 
+                return $q->whereDate('created_at',"<=",$end);
+            });
+            $query->when($bulan, function ($q,$bulan) { 
+                return $q->whereMonth('created_at', $bulan);
+            });
+            $query->when($tahun, function ($q,$tahun) { 
+                return $q->whereYear('created_at', $tahun);
+            });
+            $keuntungan = $query->with(['food','user'])->paginate(10);
+            $total = $keuntungan->whereIn("status",['ON_DELIVERY','DELIVERED'])->sum("total");
+            $total_modal = $keuntungan->whereIn("status",['ON_DELIVERY','DELIVERED'])->sum('total_modal');
+            $total_laba = $keuntungan->whereIn("status",['ON_DELIVERY','DELIVERED'])->sum('total_laba');
+            $quantity = $keuntungan->whereIn("status",['ON_DELIVERY','DELIVERED'])->sum('quantity');
+            // kas query
+            $query_kas = KasKeluar::query();
+            $query_kas->when($start, function ($q,$start) { 
+                return $q->whereDate('created_at',">=",$start);
+            });
+            $query_kas->when($end, function ($q,$end) { 
+                return $q->whereDate('created_at',"<=",$end);
+            });
+            $query_kas->when($bulan, function ($q,$bulan) { 
+                return $q->whereMonth('created_at', $bulan);
+            });
+            $query_kas->when($tahun, function ($q,$tahun) { 
+                return $q->whereYear('created_at', $tahun);
+            });
+            $kasKeluar = $query_kas->get();
+            $jumlah_pembelian = $kasKeluar->sum('quantity');
+            $total_pengeluaran = $kasKeluar->sum('total');
+            $laba_bersih = $total_laba - $total_pengeluaran;
+            $pdf = PDF::loadView('exports.pdf.keuntungan', compact("keuntungan","total","total_modal","total_laba","quantity","jumlah_pembelian","total_pengeluaran","laba_bersih"))->setPaper("a4","landscape");
+            return $pdf->stream($nama);
+        }
+
     }
 
     /**
@@ -35,10 +83,10 @@ class KeuntunganController extends Controller
         });
         $keuntungan = $query->with(['food','user'])->paginate(10);
 
-        $total = $keuntungan->sum("total");
-        $total_modal = $keuntungan->sum('total_modal');
-        $total_laba = $keuntungan->sum('total_laba');
-        $quantity = $keuntungan->sum('quantity');
+        $total = $keuntungan->whereIn("status",['ON_DELIVERY','DELIVERED'])->sum("total");
+        $total_modal = $keuntungan->whereIn("status",['ON_DELIVERY','DELIVERED'])->sum('total_modal');
+        $total_laba = $keuntungan->whereIn("status",['ON_DELIVERY','DELIVERED'])->sum('total_laba');
+        $quantity = $keuntungan->whereIn("status",['ON_DELIVERY','DELIVERED'])->sum('quantity');
 
         // kas query
         $query_kas = KasKeluar::query();
