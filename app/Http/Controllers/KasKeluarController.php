@@ -37,11 +37,11 @@ class KasKeluarController extends Controller
             });
 
             $query->when($start, function ($q) { 
-                return $q->whereDate('created_at','>=', request()->post("start"));
+                return $q->whereDate('tanggal','>=', request()->post("start"));
             });
 
             $query->when($end, function ($q) { 
-                return $q->whereDate('created_at','<=',  request()->post("end"));
+                return $q->whereDate('tanggal','<=',  request()->post("end"));
             });
 
             $query->when($type,function($q,$type)
@@ -71,11 +71,11 @@ class KasKeluarController extends Controller
         });
 
         $query->when($request->get("start",false), function ($q,$start) { 
-            return $q->whereDate('created_at','>=', $start);
+            return $q->whereDate('tanggal','>=', $start);
         });
 
         $query->when($request->get("end",false), function ($q,$end) { 
-            return $q->whereDate('created_at','<=',  $end);
+            return $q->whereDate('tanggal','<=',  $end);
         });
 
         $kaskeluar = $query->paginate(10);

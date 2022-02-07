@@ -14,7 +14,11 @@ class FoodsExport implements FromView
     */
     public function view() :View
     {
-        $food = Food::select('id','name','price','modal','laba','rate','types')->withSum("transaction",'quantity')->get();
+        $food = Food::select('id','name','price','modal','laba','rate','types')->withCount([
+            'transaction AS transaction_sum_quantity' => function ($query) {
+                $query->select(\DB::raw("SUM(quantity) as paidsum"))->whereIN('status', ['ON_DELIVERY','DELIVERED']);
+            }
+            ])->orderBy("transaction_sum_quantity","desc")->get();
         return view("exports.excel.food",compact("food"));
     }   
 }

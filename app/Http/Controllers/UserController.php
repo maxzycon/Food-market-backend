@@ -29,7 +29,11 @@ class UserController extends Controller
             return Excel::download((new UsersExport),"all-".date("d-m-Y").".xlsx");
         }else{
             $nama = "user-pdf-".date("d-m-Y").".pdf";
-            $query = User::query()->withSum("transaction","total");
+            $query = User::query()->withCount([
+                'transaction AS transaction_sum_total' => function ($query) {
+                    $query->select(\DB::raw("SUM(total) as paidsum"))->whereIN('status', ['ON_DELIVERY','DELIVERED']);
+                }
+            ]);
             $query->when($roles,function($q,$roles)
             {
                 $nama = "all-pdf-".date("d-m-Y").".pdf";
@@ -57,7 +61,11 @@ class UserController extends Controller
         $query->when($request->get("name",false), function ($q, $name) { 
             return $q->where('name','like', "%{$name}%");
         });
-        $user = $query->withSum("transaction","total")->paginate(10);
+        $user = $query->withCount([
+            'transaction AS transaction_sum_total' => function ($query) {
+                $query->select(\DB::raw("SUM(total) as paidsum"))->whereIN('status', ['ON_DELIVERY','DELIVERED']);
+            }
+            ])->paginate(10);
         return view('users.index', compact("user"));
     }
 

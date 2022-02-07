@@ -19,7 +19,11 @@ class UsersExport implements FromView
 
     public function view() :View
     {
-        $query = User::query()->withSum("transaction","total");
+        $query = User::query()->withCount([
+        'transaction AS transaction_sum_total' => function ($query) {
+            $query->select(\DB::raw("SUM(total) as paidsum"))->whereIN('status', ['ON_DELIVERY','DELIVERED']);
+        }
+        ]);
         if (empty($this->roles)) {
             $query->orderBy('transaction_sum_total','desc');
             $user = $query->get();

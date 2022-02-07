@@ -6,6 +6,8 @@ use App\Exports\KasMasukExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Database\Eloquent\Builder;
+
 
 class KasMasukController extends Controller
 {
@@ -46,24 +48,28 @@ class KasMasukController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Transaction::query();
-        $query->when($request->get("name",false), function ($q, $name) { 
-            return $q->where('user.name', 'like',"%{$name}%");
-        });
+        $query = Transaction::query()->with(['food','user']);
+        if ($request->get("name",false)) {
+            $query->whereHas('food', function (Builder $query) {
+                $name = request()->get('name');
+                $query->where('name', 'like',"%{$name}%");
+            });
+        }
         
         $query->when($request->get("type",false), function ($q, $type) { 
             return $q->where('status',$type);
         });
 
         $query->when($request->get("start",false), function ($q) { 
-            return $q->whereDate('created_at','>=', request()->get("start"));
+            return $q->whereDate('transactions.created_at','>=', request()->get("start"));
         });
 
         $query->when($request->get("end",false), function ($q) { 
-            return $q->whereDate('created_at','<=', request()->get("end"));
+            return $q->whereDate('transactions.created_at','<=', request()->get("end"));
         });
 
-        $kasmasuk = $query->with(['food','user'])->paginate(10);
+        $kasmasuk = $query->paginate(10);
+        // dd($kasmasuk);
         return view('kasmasuk.index',compact("kasmasuk"));
     }
 

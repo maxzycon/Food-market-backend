@@ -36,12 +36,12 @@ class KasKeluarExport implements FromView
         }
         $query->when($this->start,function($q)
         {
-            return $q->whereDate("created_at",">=",$this->start);
+            return $q->whereDate("tanggal",">=",$this->start);
         });
 
         $query->when($this->to,function($q)
         {
-            return $q->whereDate("created_at","<=",$this->to);
+            return $q->whereDate("tanggal","<=",$this->to);
         });
 
         $query->when($this->type,function($q,$type)

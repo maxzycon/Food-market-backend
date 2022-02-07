@@ -46,4 +46,9 @@ class Food extends Model
     {
         return $this->hasMany(Transaction::class);
     }
+
+    public function transaction_sum()
+    {
+        return $this->hasMany(Transaction::class)->whereIn("status",['ON_DELIVERY','DELIVERED'])->withSum("transaction","quantity");
+    }
 }

@@ -21,7 +21,11 @@ class FoodController extends Controller
 
     public function pdf()
     {
-        $food = Food::select('id','name','price','modal','laba','rate','types')->withSum("transaction",'quantity')->get();
+        $food = Food::select('id','name','price','modal','laba','rate','types')->withCount([
+        'transaction AS transaction_sum_quantity' => function ($query) {
+            $query->select(\DB::raw("SUM(quantity) as paidsum"))->whereIN('status', ['ON_DELIVERY','DELIVERED']);
+        }
+        ])->orderBy("transaction_sum_quantity","desc")->get();
         $pdf = PDF::loadView('exports.pdf.food', compact("food"))->setPaper("a4","landscape");
         return $pdf->stream("food-pdf-".date("d-m-Y").".pdf");
     }
@@ -51,7 +55,11 @@ class FoodController extends Controller
         $query->when($request->get("type",false), function ($q, $type) { 
             return $q->where('types','like', "%{$type}%");
         });
-        $food = $query->withSum("transaction",'quantity')->paginate(10);
+        $food = $query->withCount([
+        'transaction AS transaction_sum_quantity' => function ($query) {
+            $query->select(\DB::raw("SUM(quantity) as paidsum"))->whereIN('status', ['ON_DELIVERY','DELIVERED']);
+        }
+        ])->orderBy("transaction_sum_quantity","desc")->paginate(10);
         return view('food.index',compact("food"));
     }
 
