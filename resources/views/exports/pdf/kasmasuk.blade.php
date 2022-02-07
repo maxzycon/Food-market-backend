@@ -16,7 +16,19 @@
             <img src="./footer.png" alt="footer" width="100%">
         </footer>
         <main>
-            <h2>Laporan kas masuk</h2>
+            <h2>Laporan {{!$start && !$end ? "semua" : ""}} kas masuk</h2>
+            <table style="margin-bottom:10px">
+                <tr>
+                    <td width="20%">Tanggal start</td>
+                    <td width="2%" style="text-align:center">:</td>
+                    <td>{{$start ?? "-"}}</td>
+                </tr>
+                <tr>
+                    <td width="20%">Tanggal end</td>
+                    <td width="2%" style="text-align:center">:</td>
+                    <td>{{$end ?? "-"}}</td>
+                </tr>
+            </table>
             <table>
                 <thead>
                     <tr>

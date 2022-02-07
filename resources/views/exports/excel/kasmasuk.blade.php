@@ -1,5 +1,16 @@
 <table>
+                
     <thead>
+        <tr>
+            <td  style='border: 1px solid #000000;' colspan="6" width="20%">Tanggal start</td>
+            <td width="2%" style="text-align:center;border: 1px solid #000000;">:</td>
+            <td  style='border: 1px solid #000000;' colspan="2" >{{$start ?? "-"}}</td>
+        </tr>
+        <tr>
+            <td  style='border: 1px solid #000000;' colspan="6" width="20%">Tanggal end</td>
+            <td width="2%" style="text-align:center;border: 1px solid #000000;">:</td>
+            <td  style='border: 1px solid #000000;' colspan="2" >{{$end ?? "-"}}</td>
+        </tr>
         <tr>
             <th style='border: 1px solid #000000;'>ID</th>
             <th style='border: 1px solid #000000;'>Food</th>

@@ -1,5 +1,25 @@
 <table>
     <thead>
+        <tr>
+            <td>Tahun</td>
+            <td style="text-align:center">:</td>
+            <td>{{$tahun ?? "semua"}}</td>
+        </tr>
+        <tr>
+            <td>Bulan</td>
+            <td style="text-align:center">:</td>
+            <td>{{$bulan ?? "semua"}}</td>
+        </tr>
+        <tr>
+            <td>Tanggal start</td>
+            <td style="text-align:center">:</td>
+            <td>{{$start ?? "-"}}</td>
+        </tr>
+        <tr>
+            <td>Tanggal end</td>
+            <td style="text-align:center">:</td>
+            <td>{{$end ?? "-"}}</td>
+        </tr>
     <tr>
         <th style='background-color:yellow;' colspan="3">Laba bersih</th>
     </tr>

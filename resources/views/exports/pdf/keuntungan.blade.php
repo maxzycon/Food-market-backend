@@ -12,11 +12,33 @@
         <header>
             <img src="./header.png" alt="header" width="100%">
         </header>
-        <footer>
+        <footer class='ft'>
             <img src="./footer.png" alt="footer" width="100%">
         </footer>
         <main>
             <h2>Laporan keuntungan</h2>
+            <table style="margin-bottom:10px">
+                <tr>
+                    <td width="20%">Tahun</td>
+                    <td width="2%" style="text-align:center">:</td>
+                    <td>{{$tahun ?? "semua"}}</td>
+                </tr>
+                <tr>
+                    <td width="20%">Bulan</td>
+                    <td width="2%" style="text-align:center">:</td>
+                    <td>{{$bulan ?? "semua"}}</td>
+                </tr>
+                <tr>
+                    <td width="20%">Tanggal start</td>
+                    <td width="2%" style="text-align:center">:</td>
+                    <td>{{$start ?? "-"}}</td>
+                </tr>
+                <tr>
+                    <td width="20%">Tanggal end</td>
+                    <td width="2%" style="text-align:center">:</td>
+                    <td>{{$end ?? "-"}}</td>
+                </tr>
+            </table>
             <table>
                 <thead>
                 <tr>

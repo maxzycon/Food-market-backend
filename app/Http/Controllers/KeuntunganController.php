@@ -60,7 +60,7 @@ class KeuntunganController extends Controller
             $jumlah_pembelian = $kasKeluar->sum('quantity');
             $total_pengeluaran = $kasKeluar->sum('total');
             $laba_bersih = $total_laba - $total_pengeluaran;
-            $pdf = PDF::loadView('exports.pdf.keuntungan', compact("keuntungan","total","total_modal","total_laba","quantity","jumlah_pembelian","total_pengeluaran","laba_bersih"))->setPaper("a4","landscape");
+            $pdf = PDF::loadView('exports.pdf.keuntungan', compact("start","end","bulan","tahun","keuntungan","total","total_modal","total_laba","quantity","jumlah_pembelian","total_pengeluaran","laba_bersih"))->setPaper("a4","potrait");
             return $pdf->stream($nama);
         }
 

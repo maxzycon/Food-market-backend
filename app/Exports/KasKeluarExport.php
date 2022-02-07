@@ -49,6 +49,8 @@ class KasKeluarExport implements FromView
             return $q->where("jenis_pengeluaran",$this->type);
         });
         $kaskeluar = $query->get();
-        return view("exports.excel.kaskeluar",compact("kaskeluar"));
+        $start = $this->start;
+        $end = $this->to;
+        return view("exports.excel.kaskeluar",compact("kaskeluar","start","end"));
     }
 }

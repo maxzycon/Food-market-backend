@@ -70,6 +70,8 @@
                             <option {{ request()->get("type") == "Retribusi" ? "Selected" : "" }} value="Retribusi">Retribusi</option>
                             <option {{ request()->get("type") == "Pemeliharaan" ? "Selected" : "" }} value="Pemeliharaan">Pemeliharaan</option>
                         </select>
+                        <input type="date" name="start" id="start" value="{{request()->get('start')}}">
+                        <input type="date" name="end" id="end" value="{{request()->get('end')}}">
                         <button class="ml-2" type="submit">Filter</button>
                     </form>
                 </div>

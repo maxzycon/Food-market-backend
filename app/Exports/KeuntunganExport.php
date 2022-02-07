@@ -70,7 +70,10 @@ class KeuntunganExport implements FromView
         $jumlah_pembelian = $kasKeluar->sum('quantity');
         $total_pengeluaran = $kasKeluar->sum('total');
         $laba_bersih = $total_laba - $total_pengeluaran;
-
-        return view('exports.excel.keuntungan',compact("keuntungan","total","total_modal","total_laba","quantity","jumlah_pembelian","total_pengeluaran","laba_bersih"));
+        $bulan =$this->bulan;
+        $tahun =$this->tahun;
+        $start =$this->start;
+        $end =$this->end;
+        return view('exports.excel.keuntungan',compact("bulan","tahun","start","end","keuntungan","total","total_modal","total_laba","quantity","jumlah_pembelian","total_pengeluaran","laba_bersih"));
     }
 }

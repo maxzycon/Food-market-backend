@@ -36,6 +36,8 @@ class KasMasukExport implements FromView
 
         $kasmasuk = $query->get();
         $total = $kasmasuk->whereIn("status",['ON_DELIVERY','DELIVERED'])->sum("total");
-        return view("exports.excel.kasmasuk",compact("kasmasuk","total"));
+        $start = $this->start;
+        $end = $this->end;
+        return view("exports.excel.kasmasuk",compact("kasmasuk","total",'start','end'));
     }
 }

@@ -27,6 +27,14 @@ footer {
     height: 3.5cm;
 }
 
+.ft {
+    position: fixed;
+    left: 0cm;
+    right: 0cm;
+    bottom: 0cm;
+    height: 2.5cm;
+}
+
 h2 {
     text-align: center;
 }

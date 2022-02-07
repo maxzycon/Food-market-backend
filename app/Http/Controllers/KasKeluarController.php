@@ -50,7 +50,7 @@ class KasKeluarController extends Controller
                 return $q->where("jenis_pengeluaran",$type);
             });
             $kaskeluar = $query->get();
-            $pdf = PDF::loadView('exports.pdf.kaskeluar', compact("kaskeluar","type"))->setPaper("a4","landscape");
+            $pdf = PDF::loadView('exports.pdf.kaskeluar', compact("kaskeluar","type","start","end"))->setPaper("a4","landscape");
             return $pdf->stream($nama);
         }
     }
@@ -69,6 +69,15 @@ class KasKeluarController extends Controller
         $query->when($request->get("type",false), function ($q, $type) { 
             return $q->where('jenis_pengeluaran',$type);
         });
+
+        $query->when($request->get("start",false), function ($q,$start) { 
+            return $q->whereDate('created_at','>=', $start);
+        });
+
+        $query->when($request->get("end",false), function ($q,$end) { 
+            return $q->whereDate('created_at','<=',  $end);
+        });
+
         $kaskeluar = $query->paginate(10);
         return view('kaskeluar.index', compact("kaskeluar"));
     }
