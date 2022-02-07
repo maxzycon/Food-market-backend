@@ -18,3 +18,4 @@ Food market adalah _aplikasi marketplace penjualan makanan_ yang dibuat mengguna
 
 -   v.1.0 penambahan fitur export excel & filter
 -   v.1.1 penambahan fitur export pdf & fix bug total transaksi user **(current)**
+-   v.1.2 fix bug 7 feb 2022 5:80 PM
