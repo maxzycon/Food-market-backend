@@ -13,3 +13,8 @@ Food market adalah _aplikasi marketplace penjualan makanan_ yang dibuat mengguna
 -   Lakukan composer install pada command prompt
 -   Masukan file .env yang lama
 -   Jalankan server dengan menggunakan perintah php artisan serve
+
+# Version
+
+-   v.1.0 penambahan fitur export excel & filter
+-   v.1.1 penambahan fitur export pdf & fix bug total transaksi user **(current)**
